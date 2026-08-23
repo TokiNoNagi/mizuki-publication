@@ -1,0 +1,1 @@
+Local path resolution fixture. This is not a published image asset.

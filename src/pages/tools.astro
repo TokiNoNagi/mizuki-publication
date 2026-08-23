@@ -1,0 +1,18 @@
+---
+import StatusPage from "@components/publication/StatusPage.astro";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+---
+
+<MainGridLayout title="工具导航" description="本地维护的常用工具分类。">
+	<StatusPage
+		eyebrow="Toolkit"
+		title="工具导航"
+		status="本地目录"
+		description="先建立清晰分类；具体条目由你后续逐步补充，不请求外部目录服务。"
+		items={[
+			{ label: "开发工具", detail: "编辑、调试、构建与版本管理。" },
+			{ label: "写作工具", detail: "素材整理、Markdown 与出版流程。" },
+			{ label: "游戏工具", detail: "游戏记录、存档与辅助工具。" },
+		]}
+	/>
+</MainGridLayout>

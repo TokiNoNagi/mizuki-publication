@@ -1,0 +1,166 @@
+---
+import type { PostForList } from "@utils/content-utils";
+import { formatDateToYYYYMMDD } from "@utils/date-utils";
+import type { ArchiveModel, YearProgress } from "@utils/publication-content";
+import { getPostUrl } from "@utils/url-utils";
+
+interface Props {
+	model: ArchiveModel<PostForList>;
+	yearProgress?: YearProgress;
+	progressNote?: string;
+}
+
+const { model, yearProgress, progressNote } = Astro.props;
+
+// 分类配色，键为分类名；未命中时使用默认强调色
+const categoryTone: Record<string, string> = {
+	设计文档: "pink",
+	学习文档: "blue",
+	部署文档: "yellow",
+	实践笔记: "green",
+};
+
+const toneOf = (category: string | undefined | null): string =>
+	(category && categoryTone[category]) || "default";
+
+const MAX_VISIBLE_TAGS = 3;
+---
+
+<div class="publication-archive">
+	<dl class="publication-metrics" aria-label="出版统计">
+		<div>
+			<dd>{model.total}</dd>
+			<dt>全部文章</dt>
+		</div>
+		<div>
+			<dd>{model.spanDays}</dd>
+			<dt>创作跨度（天）</dt>
+		</div>
+		<div>
+			<dd>{model.currentMonthCount}</dd>
+			<dt>本月文章</dt>
+		</div>
+		{
+			yearProgress && (
+				<div>
+					<dd>{yearProgress.percent}%</dd>
+					<dt>年进度</dt>
+					<dd class="publication-metrics__sub">
+						年度目标 {yearProgress.goal}
+					</dd>
+				</div>
+			)
+		}
+	</dl>
+	{progressNote && <p class="publication-progress-note">{progressNote}</p>}
+	<p class="publication-filter-state" data-archive-filter hidden></p>
+	{
+		model.years.length > 0 ? (
+			<div class="publication-timeline">
+				{model.years.map((year) =>
+					year.months.map((month) => (
+						<section
+							class="publication-month"
+							data-archive-year
+							data-archive-month
+						>
+							<h2 class="publication-month__heading">
+								<span class="publication-month__year">
+									{year.year}
+								</span>
+								<span
+									class="publication-month__dot"
+									aria-hidden="true"
+								>
+									·
+								</span>
+								<span class="publication-month__month">
+									{String(month.month).padStart(2, "0")}
+								</span>
+								<small>/ {month.posts.length} 篇文章</small>
+							</h2>
+							<ol>
+								{month.posts.map((post) => {
+									const published = formatDateToYYYYMMDD(
+										post.data.published,
+										post.data._publishedDateOnly,
+									);
+									const tags = post.data.tags ?? [];
+									const visibleTags = tags.slice(
+										0,
+										MAX_VISIBLE_TAGS,
+									);
+									const extraTags =
+										tags.length - visibleTags.length;
+									return (
+										<li
+											data-archive-post
+											data-tags={tags.join("|")}
+											data-category={post.data.category ?? ""}
+										>
+											<time datetime={published}>
+												{published.slice(5)}
+											</time>
+											<a
+												class="publication-month__title"
+												href={
+													post.url ?? getPostUrl(post)
+												}
+											>
+												{post.data.title}
+											</a>
+											<span class="publication-month__meta">
+												{post.data.category && (
+													<a
+														class:list={[
+															"publication-category-tag",
+															`tone-${toneOf(post.data.category)}`,
+														]}
+														href={`/archive/?category=${encodeURIComponent(post.data.category)}`}
+													>
+														#{post.data.category}
+													</a>
+												)}
+												{visibleTags.length > 0 && (
+													<span class="publication-month__tags">
+														{visibleTags.map(
+															(tag, index) => (
+																<>
+																	{index >
+																		0 && (
+																		<span
+																			class="publication-month__tag-sep"
+																			aria-hidden="true"
+																		>
+																			/
+																		</span>
+																	)}
+																	<a
+																		href={`/archive/?tag=${encodeURIComponent(tag)}`}
+																	>
+																		{tag}
+																	</a>
+																</>
+															),
+														)}
+														{extraTags > 0 && (
+															<span class="publication-month__tag-more">
+																+{extraTags}
+															</span>
+														)}
+													</span>
+												)}
+											</span>
+										</li>
+									);
+								})}
+							</ol>
+						</section>
+					)),
+				)}
+			</div>
+		) : (
+			<p class="publication-empty">还没有可归档的文章。</p>
+		)
+	}
+</div>

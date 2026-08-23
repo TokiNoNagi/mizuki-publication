@@ -1,0 +1,20 @@
+import ContentPipelineFixture from "../../src/components/features/markdown/ContentPipelineFixture.astro";
+
+export const componentMessage = "fixture";
+export const topics = ["MDX", "Markdown"];
+
+<ContentPipelineFixture label={componentMessage} />
+
+:::note
+This fixture stays outside the published content collection.
+:::
+
+[[start-here]]
+
+::: code-group
+```js [fixture.js]
+console.log(topics.join(", "));
+```
+:::
+
+$\ce{H2O}$

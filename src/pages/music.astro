@@ -1,0 +1,14 @@
+---
+import StatusPage from "@components/publication/StatusPage.astro";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+---
+
+<MainGridLayout title="音乐" description="本地维护的音乐收藏清单。">
+	<StatusPage
+		eyebrow="Listening notes"
+		title="音乐"
+		status="本地清单"
+		description="不请求远程音源，也不自动播放。"
+		items={[{ label: "收藏结构", detail: "后续可记录专辑、曲目与听后感，不嵌入第三方播放器。" }]}
+	/>
+</MainGridLayout>

@@ -1,0 +1,68 @@
+---
+import ArchiveTimeline from "@components/publication/ArchiveTimeline.astro";
+import PageHero from "@components/publication/PageHero.astro";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { getSortedPostsList } from "@utils/content-utils";
+import {
+	buildArchiveModel,
+	buildYearProgress,
+} from "@utils/publication-content";
+
+const posts = await getSortedPostsList();
+const now = new Date();
+const model = buildArchiveModel(posts, now);
+// 年度更新目标（篇），用于归档页「年进度」指标
+const YEARLY_GOAL = 50;
+const yearProgress = buildYearProgress(posts, now, YEARLY_GOAL);
+
+const progressNote =
+	yearProgress.count === 0
+		? `今年还没有发布文章，距离年度目标 ${yearProgress.goal} 篇才刚刚起步。`
+		: yearProgress.remaining === 0
+			? `年度目标 ${yearProgress.goal} 篇已达成，继续保持稳定的输出节奏。`
+			: yearProgress.onTrack
+				? `今年的更新节奏符合预期，距离年度目标还差 ${yearProgress.remaining} 篇；余下 ${yearProgress.remainingMonths} 个月平均每月完成约 ${yearProgress.monthlyNeeded} 篇即可达成。`
+				: `今年的更新节奏暂时落后于计划，距离年度目标还差 ${yearProgress.remaining} 篇；余下 ${yearProgress.remainingMonths} 个月平均每月需要完成约 ${yearProgress.monthlyNeeded} 篇，后半程需要更稳定的输出。`;
+---
+
+<MainGridLayout title="归档" description="按年份与月份浏览本地文章。">
+	<section class="publication-page publication-page--wide" aria-labelledby="publication-title">
+		<PageHero title="归档">
+			<span slot="breadcrumb">归档 · 全部</span>
+		</PageHero>
+		<ArchiveTimeline {model} {yearProgress} {progressNote} />
+	</section>
+</MainGridLayout>
+
+<script>
+	function initArchiveFilter() {
+		const params = new URLSearchParams(window.location.search);
+		const tag = params.get("tag");
+		const category = params.get("category");
+		const uncategorized = params.get("uncategorized") === "true";
+		if (!tag && !category && !uncategorized) return;
+
+		const label = tag ? `标签：${tag}` : category ? `分类：${category}` : "未分类";
+		const state = document.querySelector<HTMLElement>("[data-archive-filter]");
+		if (state) {
+			state.textContent = `当前筛选：${label}`;
+			state.hidden = false;
+		}
+
+		for (const item of document.querySelectorAll<HTMLElement>("[data-archive-post]")) {
+			const tags = (item.dataset.tags ?? "").split("|");
+			const itemCategory = item.dataset.category ?? "";
+			item.hidden = tag
+				? !tags.includes(tag)
+				: category
+					? itemCategory !== category
+					: itemCategory.trim() !== "";
+		}
+		for (const month of document.querySelectorAll<HTMLElement>("[data-archive-month]")) {
+			month.hidden = month.querySelector("[data-archive-post]:not([hidden])") === null;
+		}
+	}
+
+	initArchiveFilter();
+	document.addEventListener("swup:page:view", initArchiveFilter);
+</script>

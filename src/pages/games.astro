@@ -1,0 +1,17 @@
+---
+import StatusPage from "@components/publication/StatusPage.astro";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+---
+
+<MainGridLayout title="小游戏" description="小游戏分区入口已经建立。">
+	<StatusPage
+		eyebrow="Playground"
+		title="小游戏"
+		status="入口已建立"
+		description="具体游戏将在玩法确认后加入。"
+		items={[
+			{ label: "第一阶段", detail: "先提供稳定入口和诚实空状态。" },
+			{ label: "后续接入", detail: "确认玩法、输入方式与移动端策略后再实现。" },
+		]}
+	/>
+</MainGridLayout>

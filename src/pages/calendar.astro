@@ -1,0 +1,14 @@
+---
+import StatusPage from "@components/publication/StatusPage.astro";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+---
+
+<MainGridLayout title="日历" description="以本地文章日期组织写作记录。">
+	<StatusPage
+		eyebrow="Writing calendar"
+		title="日历"
+		status="本地文章日期"
+		description="只展示本站文章发布时间。"
+		items={[{ label: "数据来源", detail: "读取本地 Markdown 文章的发布日期，不请求第三方日历。" }]}
+	/>
+</MainGridLayout>

@@ -1,0 +1,81 @@
+---
+import PageHero from "@components/publication/PageHero.astro";
+import PostDirectory from "@components/publication/PostDirectory.astro";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { getSortedPostsList } from "@utils/content-utils";
+
+const posts = await getSortedPostsList();
+const pinnedPosts = posts.filter((post) => post.data.pinned);
+const regularPosts = posts.filter((post) => !post.data.pinned);
+---
+
+<MainGridLayout title="文章列表" description="按主题、日期和关键词发现本地文章。">
+	<section class="publication-page publication-page--wide" aria-labelledby="publication-title">
+		<PageHero
+			eyebrow="Reading directory"
+			title="文章列表"
+			status="本地内容"
+			description="浏览开发记录、游戏、音乐与生活随笔。没有访问统计时，不展示虚假的热门排序。"
+		/>
+
+		<div class="publication-toolbar" aria-label="文章筛选与排序">
+			<label for="article-search">搜索文章</label>
+			<input id="article-search" type="search" placeholder="输入标题、标签或分类" autocomplete="off" />
+			<div class="publication-sort" aria-label="排序方式">
+				<button type="button" data-sort="newest" aria-pressed="true">最新</button>
+				<button type="button" data-sort="oldest" aria-pressed="false">最早</button>
+			</div>
+		</div>
+
+		{pinnedPosts.length > 0 && <PostDirectory title="置顶" posts={pinnedPosts} pinned />}
+		<PostDirectory title="全部文章" posts={regularPosts} />
+		<p class="publication-empty" id="article-no-results" role="status" hidden>没有匹配的文章。</p>
+	</section>
+</MainGridLayout>
+
+<script>
+	function initArticleDirectory() {
+		const input = document.querySelector<HTMLInputElement>("#article-search");
+		const buttons = [...document.querySelectorAll<HTMLButtonElement>("[data-sort]")];
+		const directories = [...document.querySelectorAll<HTMLElement>("[data-post-directory]")];
+		const empty = document.querySelector<HTMLElement>("#article-no-results");
+		if (!input || directories.length === 0) return;
+
+		let order = "newest";
+		const update = () => {
+			const query = input.value.trim().toLocaleLowerCase("zh-CN");
+			let visible = 0;
+			for (const directory of directories) {
+				const list = directory.querySelector("ol");
+				if (!list) continue;
+				const items = [...list.querySelectorAll<HTMLElement>("[data-post-item]")];
+				items.sort((left, right) => {
+					const difference = Number(right.dataset.published) - Number(left.dataset.published);
+					return order === "newest" ? difference : -difference;
+				});
+				for (const item of items) {
+					const matches = (item.dataset.searchText ?? "").includes(query);
+					item.hidden = !matches;
+					if (matches) visible += 1;
+					list.append(item);
+				}
+			}
+			if (empty) empty.hidden = visible !== 0;
+		};
+
+		input.addEventListener("input", update);
+		for (const button of buttons) {
+			button.addEventListener("click", () => {
+				order = button.dataset.sort ?? "newest";
+				for (const candidate of buttons) {
+					candidate.setAttribute("aria-pressed", String(candidate === button));
+				}
+				update();
+			});
+		}
+		update();
+	}
+
+	initArticleDirectory();
+	document.addEventListener("swup:page:view", initArticleDirectory);
+</script>

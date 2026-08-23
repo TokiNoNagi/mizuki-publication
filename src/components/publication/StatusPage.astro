@@ -1,0 +1,44 @@
+---
+import PageHero from "./PageHero.astro";
+
+interface StatusItem {
+	label: string;
+	detail: string;
+	href?: string;
+}
+
+interface Props {
+	eyebrow: string;
+	title: string;
+	description: string;
+	status?: string;
+	items?: StatusItem[];
+}
+
+const { eyebrow, title, description, status, items = [] } = Astro.props;
+---
+
+<section class="publication-page" aria-labelledby="publication-title">
+	<PageHero {eyebrow} {title} {description} {status} />
+	{
+		items.length > 0 && (
+			<ul class="publication-status-grid" role="list">
+				{items.map((item) => (
+					<li>
+						{item.href ? (
+							<a class="publication-status-card" href={item.href}>
+								<strong>{item.label}</strong>
+								<span>{item.detail}</span>
+							</a>
+						) : (
+							<div class="publication-status-card">
+								<strong>{item.label}</strong>
+								<span>{item.detail}</span>
+							</div>
+						)}
+					</li>
+				))}
+			</ul>
+		)
+	}
+</section>

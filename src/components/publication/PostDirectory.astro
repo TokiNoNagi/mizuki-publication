@@ -1,0 +1,61 @@
+---
+import type { PostForList } from "@utils/content-utils";
+import { formatDateToYYYYMMDD } from "@utils/date-utils";
+import { getPostUrl } from "@utils/url-utils";
+
+interface Props {
+	title: string;
+	posts: PostForList[];
+	pinned?: boolean;
+}
+
+const { title, posts, pinned = false } = Astro.props;
+---
+
+<section class="publication-directory" data-post-directory>
+	<div class="publication-section-heading">
+		<h2>{title}</h2>
+		<span>{posts.length} 篇</span>
+	</div>
+	{
+		posts.length > 0 ? (
+			<ol class="publication-post-list">
+				{posts.map((post) => {
+					const published = formatDateToYYYYMMDD(
+						post.data.published,
+						post.data._publishedDateOnly,
+					);
+					const searchText = [
+						post.data.title,
+						post.data.description,
+						post.data.category,
+						...(post.data.tags ?? []),
+					]
+						.filter(Boolean)
+						.join(" ")
+						.toLocaleLowerCase("zh-CN");
+					return (
+						<li
+							data-post-item
+							data-search-text={searchText}
+							data-published={post.data.published.getTime()}
+						>
+							<a class="publication-post-row" href={post.url ?? getPostUrl(post)}>
+								<div>
+									<span class="publication-post-row__label">
+										{pinned ? "置顶" : post.data.category || "随笔"}
+									</span>
+									<h3>{post.data.title}</h3>
+									{post.data.description && <p>{post.data.description}</p>}
+								</div>
+								<time datetime={published}>{published}</time>
+							</a>
+						</li>
+					);
+				})}
+			</ol>
+		) : (
+			<p class="publication-empty">这里还没有文章。</p>
+		)
+	}
+</section>

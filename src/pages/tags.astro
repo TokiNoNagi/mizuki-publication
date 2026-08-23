@@ -1,0 +1,58 @@
+---
+import PageHero from "@components/publication/PageHero.astro";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { getTagList } from "@utils/content-utils";
+import { getTagUrl } from "@utils/url-utils";
+
+const tags = await getTagList();
+---
+
+<MainGridLayout title="标签" description="搜索标签并进入对应文章结果。">
+	<section class="publication-page" aria-labelledby="publication-title">
+		<PageHero
+			eyebrow="Topic index"
+			title="标签"
+			status={`${tags.length} 个主题`}
+			description="先用稳定、清晰的普通标签视图；关系图动画留到后续阶段。"
+		/>
+		<div class="publication-toolbar">
+			<label for="tag-search">搜索标签</label>
+			<input id="tag-search" type="search" placeholder="输入标签名称" autocomplete="off" />
+		</div>
+		<ul class="publication-tag-list" role="list">
+			{tags.map((tag) => (
+				<li data-tag-item data-tag-name={tag.name.toLocaleLowerCase("zh-CN")}>
+					<a href={getTagUrl(tag.name)}>
+						<span>#{tag.name}</span>
+						<strong>{tag.count}</strong>
+					</a>
+				</li>
+			))}
+		</ul>
+		<p class="publication-empty" id="tag-no-results" role="status" hidden>没有匹配的标签。</p>
+	</section>
+</MainGridLayout>
+
+<script>
+	function initTagDirectory() {
+		const input = document.querySelector<HTMLInputElement>("#tag-search");
+		const items = [...document.querySelectorAll<HTMLElement>("[data-tag-item]")];
+		const empty = document.querySelector<HTMLElement>("#tag-no-results");
+		if (!input) return;
+		const update = () => {
+			const query = input.value.trim().toLocaleLowerCase("zh-CN");
+			let visible = 0;
+			for (const item of items) {
+				const matches = (item.dataset.tagName ?? "").includes(query);
+				item.hidden = !matches;
+				if (matches) visible += 1;
+			}
+			if (empty) empty.hidden = visible !== 0;
+		};
+		input.addEventListener("input", update);
+		update();
+	}
+
+	initTagDirectory();
+	document.addEventListener("swup:page:view", initTagDirectory);
+</script>

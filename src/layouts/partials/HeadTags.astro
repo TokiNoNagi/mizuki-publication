@@ -1,0 +1,151 @@
+---
+/**
+ * HeadTags.astro
+ * Head 标签组件 - 包含 SEO meta 标签、主题初始化脚本、CSS 变量等
+ *
+ * 提取自 Layout.astro 以实现更好的代码组织
+ */
+
+import { profileConfig, siteConfig } from "@/config";
+
+import { defaultFavicons } from "../../constants/icon";
+import type { Favicon } from "../../types/config";
+import { url } from "../../utils/url-utils";
+
+interface Props {
+	// SEO
+	title: string;
+	description?: string;
+
+	// Open Graph
+	ogImageUrl?: string;
+	setOGTypeArticle?: boolean;
+
+	// 配置
+	configHue: number;
+}
+
+const {
+	title,
+	description,
+	ogImageUrl,
+	setOGTypeArticle = false,
+	configHue,
+} = Astro.props;
+
+// 关键词
+const keywords = siteConfig.keywords;
+
+// Favicons
+const favicons: Favicon[] =
+	siteConfig.favicon.length > 0 ? siteConfig.favicon : defaultFavicons;
+---
+
+<!-- SEO Meta Tags -->
+<title>{title}</title>
+<meta name="description" content={description || title} />
+{
+	keywords && keywords.length > 0 && (
+		<meta name="keywords" content={keywords.join(", ")} />
+	)
+}
+<meta name="author" content={profileConfig.name} />
+
+<!-- Open Graph Tags -->
+<meta property="og:site_name" content={siteConfig.title} />
+<meta property="og:url" content={Astro.url} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description || title} />
+{ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+{ogImageUrl && <meta property="og:image:width" content="1200" />}
+{ogImageUrl && <meta property="og:image:height" content="630" />}
+{
+	setOGTypeArticle ? (
+		<meta property="og:type" content="article" />
+	) : (
+		<meta property="og:type" content="website" />
+	)
+}
+
+<!-- Twitter Card Tags -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={Astro.url} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description || title} />
+{ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
+<!-- Viewport and Generator -->
+<meta name="viewport" content="width=device-width" />
+<meta name="generator" content={Astro.generator} />
+
+<!-- Favicons -->
+{
+	favicons.map((favicon) => (
+		<link
+			rel="icon"
+			href={favicon.src.startsWith("/") ? url(favicon.src) : favicon.src}
+			sizes={favicon.sizes}
+			media={favicon.theme && `(prefers-color-scheme: ${favicon.theme})`}
+		/>
+	))
+}
+
+<!-- 字体通过构建脚本压缩到 /assets/font/ 目录，此处不再预加载以避免 404 -->
+<!-- 字体在构建时通过 scripts/compress-fonts.js 处理并复制到 dist/ -->
+
+<!-- Set the theme before the page is rendered to avoid a flash -->
+<script is:inline define:vars={{ configHue }}>
+	(function () {
+		var html = document.documentElement;
+		var media = window.matchMedia("(prefers-color-scheme: dark)");
+
+		function readPreference() {
+			try {
+				var stored = localStorage.getItem("theme");
+				return stored === "light" || stored === "dark" || stored === "system"
+					? stored
+					: "system";
+			} catch (_) {
+				return "system";
+			}
+		}
+
+		var preference = readPreference();
+
+		function applyTheme() {
+			var resolved =
+				preference === "system"
+					? media.matches
+						? "dark"
+						: "light"
+					: preference;
+			html.classList.toggle("dark", resolved === "dark");
+			html.dataset.theme =
+				resolved === "dark" ? "github-dark" : "github-light";
+			html.dataset.themePreference = preference;
+			html.dataset.resolvedTheme = resolved;
+			html.style.colorScheme = resolved;
+		}
+
+		applyTheme();
+		media.addEventListener("change", function () {
+			preference = readPreference();
+			if (preference === "system") applyTheme();
+		});
+		html.style.setProperty("--hue", String(configHue));
+	})();
+</script>
+
+<!-- Dev mode script - avoid swup replacing head styles -->
+<script is:inline define:vars={{ IS_DEV: import.meta.env.DEV }}>
+	// Dev 模式下，避免 swup 在页面切换时反复替换 head 中的样式标签，导致偶发样式丢失
+	if (IS_DEV) {
+		document.addEventListener("swup:enable", () => {
+			if (window?.swup?.options) {
+				window.swup.options.updateHead = false;
+			}
+		});
+		if (window?.swup?.options) {
+			window.swup.options.updateHead = false;
+		}
+	}
+</script>

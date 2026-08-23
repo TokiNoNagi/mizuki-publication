@@ -1,0 +1,17 @@
+---
+import StatusPage from "@components/publication/StatusPage.astro";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+---
+
+<MainGridLayout title="相册" description="相册结构已建立，等待用户提供图片素材。">
+	<StatusPage
+		eyebrow="Photo archive"
+		title="相册"
+		status="等待素材"
+		description="当前不展示上游演示图片，也不会擅自下载其他来源素材。"
+		items={[
+			{ label: "下一步", detail: "确定图片选题后，我会列出尺寸与格式，由你下载并提供。" },
+			{ label: "当前边界", detail: "不读取本地壁纸，不将壁纸当作相册素材。" },
+		]}
+	/>
+</MainGridLayout>

@@ -1,0 +1,17 @@
+---
+import StatusPage from "@components/publication/StatusPage.astro";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+---
+
+<MainGridLayout title="个人主站" description="个人主站将在基础出版功能稳定后制作。">
+	<StatusPage
+		eyebrow="Personal hub"
+		title="个人主站"
+		status="最后制作"
+		description="复杂交互与视觉首页将在基础出版功能稳定后制作。"
+		items={[
+			{ label: "当前阶段", detail: "先完成文章阅读、归档和基础分区。" },
+			{ label: "后续方向", detail: "再设计更丰富的个人表达与探索式入口。" },
+		]}
+	/>
+</MainGridLayout>

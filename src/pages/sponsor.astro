@@ -1,0 +1,14 @@
+---
+import StatusPage from "@components/publication/StatusPage.astro";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+---
+
+<MainGridLayout title="赞助" description="赞助入口暂未接入。">
+	<StatusPage
+		eyebrow="Support"
+		title="赞助"
+		status="暂未接入"
+		description="不展示支付链接或未经确认的二维码。"
+		items={[{ label: "当前状态", detail: "第一阶段只保留说明，不处理支付或访客信息。" }]}
+	/>
+</MainGridLayout>

@@ -1,0 +1,14 @@
+---
+import StatusPage from "@components/publication/StatusPage.astro";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+---
+
+<MainGridLayout title="留言" description="第一阶段不收集访客数据。">
+	<StatusPage
+		eyebrow="Contact"
+		title="留言"
+		status="未启用收集"
+		description="第一阶段不接入第三方评论或访客数据存储。"
+		items={[{ label: "隐私说明", detail: "当前页面不会提交、保存或分析访客输入。" }]}
+	/>
+</MainGridLayout>

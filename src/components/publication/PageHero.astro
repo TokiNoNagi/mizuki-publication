@@ -1,0 +1,47 @@
+---
+interface Props {
+	eyebrow?: string;
+	title: string;
+	description?: string;
+	status?: string;
+}
+
+const { eyebrow, title, description, status } = Astro.props;
+---
+
+<header class="publication-hero">
+	<nav class="publication-breadcrumb" aria-label="面包屑">
+		<a href="/">
+			<svg
+				class="publication-breadcrumb__home"
+				viewBox="0 0 24 24"
+				width="14"
+				height="14"
+				aria-hidden="true"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<path d="M3 10.5 12 3l9 7.5"></path>
+				<path d="M5 9.5V21h14V9.5"></path>
+			</svg>
+			主页
+		</a>
+		<span aria-hidden="true">›</span>
+		<span class="publication-breadcrumb__current" aria-current="page"
+			><slot name="breadcrumb">{title}</slot></span
+		>
+	</nav>
+	{
+		(eyebrow || status) && (
+			<div class="publication-hero__meta">
+				{eyebrow && <p class="publication-eyebrow">{eyebrow}</p>}
+				{status && <span class="publication-status">{status}</span>}
+			</div>
+		)
+	}
+	<h1 id="publication-title">{title}</h1>
+	{description && <p class="publication-hero__description">{description}</p>}
+</header>
