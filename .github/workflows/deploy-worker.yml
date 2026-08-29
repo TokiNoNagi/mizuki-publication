@@ -50,7 +50,6 @@ jobs:
           SITE_URL: https://tokinonagi.dpdns.org/
 
       - name: Deploy Worker
-        if: ${{ env.CF_API_TOKEN != '' && env.CF_ACCOUNT_ID != '' }}
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
