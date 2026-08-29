@@ -50,8 +50,17 @@ jobs:
           SITE_URL: https://tokinonagi.dpdns.org/
 
       - name: Deploy Worker
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy --tag ${{ github.sha }}
+        shell: bash
+        run: |
+          set +e
+          pnpm exec wrangler deploy --tag "$GITHUB_SHA" 2>&1 | tee /tmp/wrangler-deploy.log
+          deploy_status=${PIPESTATUS[0]}
+          if (( deploy_status != 0 )); then
+            while IFS= read -r line; do
+              line=${line//'%'/'%25'}
+              line=${line//$'\r'/'%0D'}
+              line=${line//$'\n'/'%0A'}
+              echo "::error title=Cloudflare deployment failed::$line"
+            done < <(tail -n 16 /tmp/wrangler-deploy.log)
+          fi
+          exit "$deploy_status"
