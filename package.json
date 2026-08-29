@@ -13,7 +13,7 @@
     "deploy:worker": "wrangler deploy",
     "verify:worker": "node scripts/verify-worker-deployment.mjs",
     "astro": "astro",
-    "type-check": "astro sync && wrangler types && tsc --noEmit",
+    "type-check": "astro sync && tsc --noEmit && wrangler types && tsc -p tsconfig.worker.json --noEmit",
     "test": "node --experimental-strip-types --test tests/*.test.mjs tests/*.test.ts",
     "new-post": "node scripts/new-post.js",
     "format": "biome format --write ./src ./tests",
