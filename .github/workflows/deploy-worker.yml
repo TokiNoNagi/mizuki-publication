@@ -56,8 +56,7 @@ jobs:
             --get "https://api.cloudflare.com/client/v4/zones" \
             --header "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
             --header "Content-Type: application/json" \
-            --data-urlencode "name=tokinonagi.dpdns.org" \
-            --data-urlencode "account.id=$CLOUDFLARE_ACCOUNT_ID") || {
+            --data-urlencode "name=tokinonagi.dpdns.org") || {
               echo "::error title=Cloudflare zone preflight::Cloudflare API request failed"
               exit 1
             }
@@ -66,7 +65,11 @@ jobs:
             exit 1
           fi
           if [[ $(jq -r '.result | length' <<< "$response") != 1 ]]; then
-            echo "::error title=Cloudflare zone preflight::The configured account and token cannot access the active tokinonagi.dpdns.org zone"
+            echo "::error title=Cloudflare zone preflight::The API token cannot access the active tokinonagi.dpdns.org zone; check Zone Read and token resource scope"
+            exit 1
+          fi
+          if [[ $(jq -r '.result[0].account.id' <<< "$response") != "$CLOUDFLARE_ACCOUNT_ID" ]]; then
+            echo "::error title=Cloudflare zone preflight::CLOUDFLARE_ACCOUNT_ID does not match the account that owns the tokinonagi.dpdns.org zone"
             exit 1
           fi
           if [[ $(jq -r '.result[0].status' <<< "$response") != active ]]; then
