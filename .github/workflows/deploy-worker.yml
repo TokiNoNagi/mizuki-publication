@@ -49,6 +49,31 @@ jobs:
           DEPLOY_BASE: /
           SITE_URL: https://tokinonagi.dpdns.org/
 
+      - name: Verify Cloudflare zone access
+        shell: bash
+        run: |
+          response=$(curl --fail-with-body --silent --show-error \
+            --get "https://api.cloudflare.com/client/v4/zones" \
+            --header "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            --header "Content-Type: application/json" \
+            --data-urlencode "name=tokinonagi.dpdns.org" \
+            --data-urlencode "account.id=$CLOUDFLARE_ACCOUNT_ID") || {
+              echo "::error title=Cloudflare zone preflight::Cloudflare API request failed"
+              exit 1
+            }
+          if [[ $(jq -r '.success' <<< "$response") != true ]]; then
+            jq -r '.errors[] | "::error title=Cloudflare zone preflight::API error \(.code): \(.message)"' <<< "$response"
+            exit 1
+          fi
+          if [[ $(jq -r '.result | length' <<< "$response") != 1 ]]; then
+            echo "::error title=Cloudflare zone preflight::The configured account and token cannot access the active tokinonagi.dpdns.org zone"
+            exit 1
+          fi
+          if [[ $(jq -r '.result[0].status' <<< "$response") != active ]]; then
+            echo "::error title=Cloudflare zone preflight::The tokinonagi.dpdns.org zone is not active"
+            exit 1
+          fi
+
       - name: Deploy Worker
         shell: bash
         run: |
