@@ -2,6 +2,7 @@ allowBuilds:
   esbuild: true
   sharp: true
   ttf2woff2: true
+  workerd: true
 minimumReleaseAgeExclude:
   - oddmisc
   - '@astrojs/*'
@@ -45,3 +46,5 @@ minimumReleaseAgeExclude:
   - '@biomejs/cli-win32-arm64@2.5.2'
   - '@biomejs/cli-win32-x64@2.5.2'
   - '@iconify-json/material-symbols@1.2.82'
+  - miniflare@5.20260828.0-alpha
+  - wrangler@4.127.1

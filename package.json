@@ -8,8 +8,12 @@
     "check": "astro check",
     "build": "astro build && node scripts/check-global-style-loading.mjs && pagefind --site dist && node scripts/check-font-loading.mjs",
     "preview": "astro preview",
+    "worker:dev": "wrangler dev",
+    "worker:types": "wrangler types",
+    "deploy:worker": "wrangler deploy",
+    "verify:worker": "node scripts/verify-worker-deployment.mjs",
     "astro": "astro",
-    "type-check": "tsc --noEmit",
+    "type-check": "wrangler types && tsc --noEmit",
     "test": "node --experimental-strip-types --test tests/*.test.mjs tests/*.test.ts",
     "new-post": "node scripts/new-post.js",
     "format": "biome format --write ./src ./tests",
@@ -86,7 +90,8 @@
     "glob": "^13.0.6",
     "hast-util-from-html": "2.0.3",
     "postcss-import": "^16.1.1",
-    "postcss-nesting": "^14.0.0"
+    "postcss-nesting": "^14.0.0",
+    "wrangler": "4.127.1"
   },
-	"packageManager": "pnpm@11.3.0"
+  "packageManager": "pnpm@11.3.0"
 }

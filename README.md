@@ -24,10 +24,24 @@ corepack pnpm preview
 ## Deployment
 
 `main` 分支同时部署到两个目标：GitHub Pages 提供项目站点，Cloudflare
-Worker Static Assets 提供 `https://tokinonagi.dpdns.org/` 主站。GitHub 仓库需要将
+Worker Static Assets 提供 `https://tokinonagi.dpdns.org/` 主站及同源 `/api/*`。
+本地完整 Worker 预览和生产健康检查：
+
+```bash
+pnpm build
+pnpm worker:dev
+pnpm verify:worker
+```
+
+直接部署使用 `pnpm deploy:worker`。GitHub 仓库需要将
 Pages Source 设为 **GitHub Actions**，并配置 Actions secrets
 `CLOUDFLARE_API_TOKEN` 与 `CLOUDFLARE_ACCOUNT_ID`。Cloudflare API token 只需
 Workers Scripts Edit 和对应 zone 的 Workers Routes Edit 权限。
+
+`GET /api/health` 检查运行时、部署版本和时间；`GET /api/version` 返回最小版本
+信息。GitHub Pages `https://tokinonagi.github.io/mizuki-publication/` 保留为静态回滚
+入口。Cloudflare 可通过 Dashboard 的 Workers & Pages 部署历史回滚，或使用
+`pnpm exec wrangler rollback [VERSION_ID]` 回退 Worker 版本。
 
 ## Writing
 
