@@ -7,6 +7,12 @@ import type { SidebarLayoutConfig } from "../types/config";
 export const sidebarLayoutConfig: SidebarLayoutConfig = {
 	properties: [
 		{
+			type: "profile",
+			position: "top",
+			class: "onload-animation",
+			animationDelay: 0,
+		},
+		{
 			type: "categories",
 			position: "sticky",
 			class: "onload-animation",
@@ -34,9 +40,9 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 		},
 	],
 	components: {
-		left: ["tags", "card-toc"],
+		left: ["profile", "tags", "card-toc"],
 		right: ["calendar", "categories"],
-		drawer: ["categories", "tags"],
+		drawer: ["profile", "categories", "tags"],
 	},
 	defaultAnimation: {
 		enable: true,

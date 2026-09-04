@@ -37,7 +37,7 @@ export const siteConfig: SiteConfig = {
 		// 顶栏标题文本
 		text: "Tokinagi 出版室",
 		// 顶栏标题图标路径，默认使用 public/assets/home/home.webp
-		icon: "/assets/avatar.jpg",
+		icon: "",
 		// 网站Logo图片路径
 		logo: "",
 	},
