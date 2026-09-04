@@ -192,7 +192,7 @@ const items = [
 	}
 
 	/* 黑色气泡提示（截图样式） */
-	.quick-fab__btn::after {
+	.quick-fab__btn[data-tip]::after {
 		content: attr(data-tip);
 		position: absolute;
 		right: calc(100% + 0.75rem);
@@ -214,8 +214,8 @@ const items = [
 			transform 0.15s ease;
 	}
 
-	.quick-fab__btn:hover::after,
-	.quick-fab__btn:focus-visible::after {
+	.quick-fab__btn[data-tip]:hover::after,
+	.quick-fab__btn[data-tip]:focus-visible::after {
 		opacity: 1;
 		transform: translateY(-50%) scale(1);
 	}

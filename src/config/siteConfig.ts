@@ -35,7 +35,7 @@ export const siteConfig: SiteConfig = {
 		// 显示模式："text-icon" 显示图标+文本，"logo" 仅显示Logo
 		mode: "text-icon",
 		// 顶栏标题文本
-		text: "Tokinagi 出版室",
+		text: "Tokinagi",
 		// 顶栏标题图标路径，默认使用 public/assets/home/home.webp
 		icon: "",
 		// 网站Logo图片路径
